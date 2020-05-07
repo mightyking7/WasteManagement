@@ -1,10 +1,29 @@
 import numpy as np
 from env import GridWorld
-from algo import Q_learning
+# from algo import Q_learning
+from tqdm import tqdm
 
-# rows = 6
-# cols = 25
-# epsilon = 0.9
+# rows in grid
+rows = 6
+
+# columns in grid
+cols = 25
+
+# probability of taking a greedy action
+epsilon = 0.9
+
+# discount factor
+gamma = 0.6
+
+# num actions: up, down, left, right
+nA = 4
+
+# learning rate
+lr = 0.01
+
+# episodes for training
+n_episodes = 50
+
 
 # 1 is an obstacle, 0 is an empty cell
 # dist = [1,0,0,0,0]
@@ -13,28 +32,46 @@ from algo import Q_learning
 #
 # world = np.array([np.random.choice(dist) for i in range (num_tiles)]).reshape((rows, cols))
 
-grid_world = GridWorld()
-behavior_policy = RandomPolicy()
-
-n_episodes = 50
+grid_world = GridWorld(nRows = rows, nCols = cols, nA = nA, gamma = gamma)
+# behavior_policy = RandomPolicy()
 
 
-trajs = []
+# initial Q table
+Q = np.zeros((grid_world.nS, grid_world.nA))
 
-for _ in range(n_episodes):
-    s = grid_world.reset()
-    traj = []
+
+for _ in tqdm(range(n_episodes)):
+
+    state = grid_world.reset()
+
     done = False
 
     while not done :
-        a = behavior_policy.action(s)
-        next_s, r, done = grid_world.step(a)
-        traj.append((s, a, r, next_s))
-        s = next_s
-    trajs.append(traj)
 
-Q = Q_learning(grid_world.spec, trajs, behavior_policy, n=1, alpha=0.01,
-               initQ=np.zeros((grid_world.spec.nS, grid_world.spec.nA)))
+        # explore action space
+        if np.random.uniform(0, 1) < epsilon:
+            action = grid_world.sample()
+
+        # exploit
+        else:
+            action = np.argmax(Q[state])
+
+        # take step in env
+        obs, r, done = grid_world.step(action)
+
+        # update Q table
+        prev_value = Q[state, action]
+
+        new_value = prev_value + lr * (r + grid_world.gamma * np.max(Q[obs]) - prev_value)
+
+        Q[state, action] = new_value
+
+        # update state
+        state = obs
+
+# sidewalk policy
+# Q = Q_learning(grid_world.gamma, trajs, behavior_policy, lr = lr,
+#                initQ=np.zeros((grid_world.nS, grid_world.nA)))
 
 # plot policy
 
