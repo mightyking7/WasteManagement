@@ -1,46 +1,62 @@
 import numpy as np
 
 
-class Env:
+class GridWorld:
     """
     Defines the states, actions, and rewards the
     agent needs to learn an optimal policy.
     """
-    def __init__(self,nS, nA, gamma):
-        self._nS = nS
+    def __init__(self, nRows, nCols, nA, gamma):
+        self._nS = nRows * nCols
         self._nA = nA
+        self._nRows = nRows
+        self._nCols = nCols
         self._gamma = gamma
+        self._terminal_state = [i for i in self._terminal_states()]
+        self._trans_mat, self._reward_mat = self._build_trans_mat()
 
     @property
     def nS(self) -> int:
-        """ # possible states """
+        """ # of possible states """
         return self._nS
 
     @property
     def nA(self) -> int:
-        """ # possible actions """
+        """ # of possible actions """
         return self._nA
 
     @property
     def gamma(self) -> float:
-        """ discounting factor of the environment """
+        """ discount factor"""
         return self._gamma
 
     def reset(self) -> int:
         """
-        reset the environment. It should be called when you want to generate a new episode
+        Reset the environment when you want to generate a new episode.
+        Randomly initializes location for each episode run.
         return:
             initial state
         """
-        raise NotImplementedError()
+        self.state = np.random.randint(1, self._nS + 1)
+        return self.state
 
-    def step(self,action:int) -> (int, int, bool):
+    def step(self, action:int) -> (int, int, bool):
         """
-        proceed one step.
+        proceed one step in the state space.
         return:
-            next state, reward, done (whether it reached to a terminal state)
+            next state, reward, done (whether agent reached to a terminal state)
         """
-        raise NotImplementedError()
+        assert action in range(self._nA), "Invalid Action"
+        assert self.state not in self._terminal_state, "Episode has ended!"
+
+        prev_state = self.state
+        self.state = np.random.choice(np.arange(1, self.nS + 1), p=self._trans_mat[self.state, action])
+        r = self._reward_mat[prev_state, action, self.state]
+
+        if self.state in self._terminal_state:
+            return self.state, r, True
+        else:
+            return self.state, r, False
 
     @property
     def TD(self) -> np.array:
@@ -49,7 +65,7 @@ class Env:
         return: a numpy array shape of [nS,nA,nS]
             TD[s,a,s'] := the probability it will resulted in s' when it execute action a given state s
         """
-        raise NotImplementedError()
+        return self._trans_mat
 
     @property
     def R(self) -> np.array:
@@ -58,4 +74,59 @@ class Env:
         return: a numpy array shape of [nS,nA,nS]
             R[s,a,s'] := reward the agent will get it experiences (s,a,s') transition.
         """
-        raise NotImplementedError()
+        return self._reward_mat
+
+    def _terminal_states(self):
+        """
+        Generator yields terminal states
+        :return:
+        """
+        for i in range(1, self._nS + 1):
+           if i % self._nCols == 0:
+               yield i
+
+    def _build_trans_mat(self):
+
+        trans_mat = np.zeros((self._nS, self._nA, self._nS), dtype=int)
+        reward_mat = np.zeros((self._nS, self._nA, self._nS)) - 1.
+
+        """
+                0 - left
+                1 - up
+                2 - right
+                3 - down
+        """
+
+        for s in range(1, self._nS):
+
+            # cannot move once in terminal state
+            if s in self._terminal_state:
+                trans_mat[s, :, s] = 1.
+                continue
+
+            # define left movements
+            if (s - 1) % self._nCols == 0:
+                trans_mat[s][0][s] = 1.
+            else:
+                trans_mat[s][0][s - 1] = 1.
+
+            # define up movements
+            if s < self._nCols:
+                trans_mat[s][1][s] = 1.
+            else:
+                trans_mat[s][1][s - self._nCols] = 1.
+
+            # define right movements
+            trans_mat[s][2][s + 1] = 1.
+
+            # define down movements
+            if s > self._nA - self._nCols:
+                trans_mat[s][3][s] = 1.
+            else:
+                trans_mat[s][3][s + self._nCols] = 1.
+
+        # for a in range(self._nA):
+        #     reward_mat[0][a][0] = 0
+        #     reward_mat[15][a][15] = 0
+
+        return trans_mat, reward_mat
