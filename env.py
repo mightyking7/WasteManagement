@@ -10,14 +10,15 @@ class GridWorld:
         self._nS = nRows * nCols
         self._nA = nA
         self._gamma = gamma
-        self._trans_mat, self._reward_mat = self._build_trans_mat()
-
         self.nRows = nRows
         self.nCols = nCols
-        self.terminal_state = [i for i in self._terminal_states()]
 
         # left, up, right, down
         self.action_space = [0, 1, 2, 3]
+
+        self.terminal_state = [i for i in self._terminal_states()]
+        self._trans_mat, self._reward_mat = self._build_trans_mat()
+
 
     @property
     def nS(self) -> int:
@@ -65,7 +66,7 @@ class GridWorld:
         return:
             initial state
         """
-        self.state = np.random.randint(1, self._nS + 1)
+        self.state = np.random.randint(self._nS)
         return self.state
 
     def step(self, action:int) -> (int, int, bool):
@@ -75,10 +76,10 @@ class GridWorld:
             next state, reward, done (whether agent reached to a terminal state)
         """
         assert action in range(self._nA), "Invalid Action"
-        assert self.state not in self.terminal_state, "Episode has ended!"
+        # assert self.state not in self.terminal_state, "Episode has ended!"
 
         prev_state = self.state
-        self.state = np.random.choice(np.arange(1, self.nS + 1), p=self._trans_mat[self.state, action])
+        self.state = np.random.choice(self.nS, p=self._trans_mat[self.state, action])
         r = self._reward_mat[prev_state, action, self.state]
 
         if self.state in self.terminal_state:
@@ -93,7 +94,7 @@ class GridWorld:
         """
         for i in range(1, self._nS + 1):
            if i % self.nCols == 0:
-               yield i
+               yield i - 1
 
     def _build_trans_mat(self):
 
@@ -107,7 +108,7 @@ class GridWorld:
                 3 - down
         """
 
-        for s in range(1, self._nS):
+        for s in range(self._nS):
 
             # cannot move once in terminal state
             if s in self.terminal_state:
@@ -115,7 +116,7 @@ class GridWorld:
                 continue
 
             # define left movements
-            if (s - 1) % self.nCols == 0:
+            if s % self.nCols == 0:
                 trans_mat[s][0][s] = 1.
             else:
                 trans_mat[s][0][s - 1] = 1.
@@ -130,7 +131,7 @@ class GridWorld:
             trans_mat[s][2][s + 1] = 1.
 
             # define down movements
-            if s > self._nA - self.nCols:
+            if s >= self._nS - self.nCols:
                 trans_mat[s][3][s] = 1.
             else:
                 trans_mat[s][3][s + self.nCols] = 1.
