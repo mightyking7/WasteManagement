@@ -150,11 +150,21 @@ for s in path:
     pi.append(i)
     pj.append(j)
 
+# sidewalk coords
+left_x, right_x = np.arange(cols), np.arange(cols)
+left_y, right_y = np.array([sL] * cols), np.array([sR] * cols)
+
+# plot
+plt.gca().invert_yaxis()
+
 plt.plot(sj, si, 'b.')
+plt.plot(left_x, left_y, color = 'black', linestyle = '-', label = 'sidewalk')
+plt.plot(right_x, right_y, color = 'black', linestyle = '-')
 
 plt.plot(pj[0], pi[0], color = 'red', marker = 's')
-plt.plot(pj, pi, color = 'green', linestyle = '--')
-plt.plot(pj[-1], pi[-1], color = 'gold', marker = "o")
+plt.plot(pj, pi, color = 'green', linestyle = '--', label = 'agent path')
+plt.plot(pj[-1], pi[-1], color = 'gold', marker = 'o')
+plt.legend()
 
 #
 plt.show()
