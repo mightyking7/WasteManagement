@@ -53,8 +53,15 @@ if not os.path.exists(fname_policy):
     # TODO make this dynamic
     Q[[24, 49, 74, 99, 124, 149], :] = 0
 
+    theta = 1e-4
+    delta2 = float('inf')
 
-    for _ in tqdm(range(n_episodes)):
+    print("Training")
+
+    # update Q function until convergence
+    while delta2 >= theta:
+
+        delta = 0.0
 
         state = grid_world.reset()
 
@@ -83,6 +90,11 @@ if not os.path.exists(fname_policy):
             # update state
             state = obs
 
+            delta = max(delta, np.abs(new_value - prev_value))
+
+        # determine max delta in q values
+        delta2 = delta
+
     # save policy
     np.save(fname_policy, Q)
 
@@ -94,25 +106,26 @@ n_runs = 1
 
 path = []
 
+print("Evaluating policy")
+
 # evaluate policy
-# for i in range(n_runs):
-#     state = grid_world.reset()
-#
-#     path.append(state)
-#
-#     done = False
-#
-#     while not done:
-#         action = np.argmax(Q[state])
-#         obs, r, done = grid_world.step(action)
-#
-#         state = obs
-#
-#         # add next state to path
-#         path.append(obs)
-#         print(path)
-#
-# print("Done")
+for i in range(n_runs):
+    state = grid_world.reset()
+
+    path.append(state)
+
+    done = False
+
+    while not done:
+        action = np.argmax(Q[state])
+        obs, r, done = grid_world.step(action)
+
+        state = obs
+
+        # add next state to path
+        path.append(obs)
+
+print(f"Done evaluating: {path}")
 
 # plot policy
 si, sj = list(), list()
