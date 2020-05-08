@@ -6,12 +6,14 @@ class GridWorld:
     Defines the states, actions, and rewards the
     agent needs to learn an optimal policy.
     """
-    def __init__(self, nRows, nCols, nA, gamma):
+    def __init__(self, nRows, nCols, sL, sR,  nA, gamma):
         self._nS = nRows * nCols
         self._nA = nA
         self._gamma = gamma
         self.nRows = nRows
         self.nCols = nCols
+        self.sL = sL
+        self.sR = sR
 
         # left, up, right, down
         self.action_space = [0, 1, 2, 3]

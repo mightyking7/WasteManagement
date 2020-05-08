@@ -23,6 +23,10 @@ nA = 4
 # learning rate
 lr = 0.01
 
+# rows for edge of left and right sidewalk
+sL = 1
+sR = 3
+
 # directories for policy
 policy_dir = "./policy/"
 fname_policy = "./policy/sidewalk_policy.npy"
