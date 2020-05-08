@@ -98,15 +98,13 @@ class GridWorld:
            if i % self.nCols == 0:
                yield i - 1
 
-    def _build_trans_mat(self) -> (np.ndarray, np.ndarray):
+    def _build_trans_mat(self) -> np.ndarray:
         """
-        Defines the reward matrix and transition dynamics.
+        Defines the transition dynamics matrix.
         :return:
         """
         trans_mat = np.zeros((self._nS, self._nA, self._nS), dtype=int)
 
-        # -1 reward for moving to any state
-        reward_mat = np.zeros((self._nS, self._nA, self._nS)) - 1.
 
         """
                 0 - left
@@ -143,8 +141,26 @@ class GridWorld:
             else:
                 trans_mat[s][3][s + self.nCols] = 1.
 
-        # zero reward for moving to terminal state
-        for ts in self.terminal_states:
-            reward_mat[ts, :, ts] = 10
+        return trans_mat
 
-        return trans_mat, reward_mat
+    def _build_reward_mat(self) -> np.ndarray:
+        """
+        Defines the reward matrix
+        :return:
+        """
+        reward_mat = np.zeros((self._nS, self._nA, self._nS))
+
+        for s in range(self._nS):
+
+            # terminal state
+            if s in self.terminal_states:
+                reward_mat[s - 1, 2, s] = 50
+                continue
+
+            # moving toward terminal state
+            reward_mat[s, 2, s + 1] = 10.
+
+            # moving away from terminal state
+            reward_mat[s, 0, s - 1] = -10.
+
+        return reward_mat
