@@ -153,15 +153,39 @@ class GridWorld:
 
         for s in range(self._nS):
 
+            row = s // self.nCols
+
             # terminal state
             if s in self.terminal_states:
-                reward_mat[s - 1, 2, s] = 50
+
+                # within sidewalk
+                if row > self.sL and row < self.sR:
+                    reward_mat[s - 1, 2, s] = 50.
+                else:
+                    reward_mat[s - 1, 2, s] = 15.
+
                 continue
 
-            # moving toward terminal state
-            reward_mat[s, 2, s + 1] = 10.
+            # within sidewalk
+            if row > self.sL and row < self.sR:
+                reward_mat[s, 2, s + 1] = 10.
+                reward_mat[s, 0, s - 1] = -10.
 
-            # moving away from terminal state
-            reward_mat[s, 0, s - 1] = -10.
+            # on left sidewalk edge
+            elif row == self.sL:
+                reward_mat[s, 3, s + self.nCols] = 10.
+                reward_mat[s, 2, s + 1] = 5.
+                reward_mat[s, 0, s - 1] = -10.
+
+            # on right sidewalk edge
+            elif row == self.sR:
+                reward_mat[s, 1, s - self.nCols] = 10.
+                reward_mat[s, 2, s + 1] = 5.
+                reward_mat[s, 0, s - 1] = -10.
+
+            # out of sidewalk
+            else:
+                reward_mat[s, 2, s + 1] = 5.
+                reward_mat[s, 0, s - 1] = -10.
 
         return reward_mat
