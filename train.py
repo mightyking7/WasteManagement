@@ -2,6 +2,7 @@ import numpy as np
 from env import GridWorld
 # from algo import Q_learning
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 # rows in grid
 rows = 6
@@ -22,7 +23,7 @@ nA = 4
 lr = 0.01
 
 # episodes for training
-n_episodes = 50
+n_episodes = 500
 
 
 # 1 is an obstacle, 0 is an empty cell
@@ -36,9 +37,11 @@ grid_world = GridWorld(nRows = rows, nCols = cols, nA = nA, gamma = gamma)
 # behavior_policy = RandomPolicy()
 
 
-# initial Q table
-Q = np.zeros((grid_world.nS, grid_world.nA))
+# randomly initialize Q table
+Q = np.random.rand(grid_world.nS, grid_world.nA)
 
+# set state-action value of final states to 0
+Q[[24, 49, 74, 99, 124, 149], :] = 0
 
 for _ in tqdm(range(n_episodes)):
 
@@ -73,6 +76,33 @@ for _ in tqdm(range(n_episodes)):
 # Q = Q_learning(grid_world.gamma, trajs, behavior_policy, lr = lr,
 #                initQ=np.zeros((grid_world.nS, grid_world.nA)))
 
+n_runs = 1
+
+path = []
+
+# evaluate policy
+for i in range(n_runs):
+    state = grid_world.reset()
+
+    path.append(state)
+
+    done = False
+
+    while not done:
+        action = np.argmax(Q[state])
+        obs, r, done = grid_world.step(action)
+
+        state = obs
+
+        # add next state to path
+        path.append(obs)
+        print(path)
+
+print("Done")
+
 # plot policy
 
+plt.plot(0, path[0], color='red', marker='s')
+plt.plot(np.arange(1, cols), path[1:], color='blue', linestyle='--')
+plt.show()
 
