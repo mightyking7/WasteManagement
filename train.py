@@ -11,7 +11,7 @@ rows = 6
 # columns in grid
 cols = 25
 
-# probability of taking a greedy action
+# probability of exploring
 epsilon = 0.1
 
 # discount factor
@@ -23,9 +23,7 @@ nA = 4
 # learning rate
 lr = 0.01
 
-# episodes for training
-n_episodes = 500
-
+# directories for policy
 policy_dir = "./policy/"
 fname_policy = "./policy/sidewalk_policy.npy"
 
@@ -56,6 +54,8 @@ if not os.path.exists(fname_policy):
     theta = 1e-4
     delta2 = float('inf')
 
+    episode = 1
+
     print("Training")
 
     # update Q function until convergence
@@ -66,6 +66,8 @@ if not os.path.exists(fname_policy):
         state = grid_world.reset()
 
         done = False
+
+        print(f"> Episode: {episode}")
 
         while not done :
 
@@ -94,6 +96,7 @@ if not os.path.exists(fname_policy):
 
         # determine max delta in q values
         delta2 = delta
+        episode += 1
 
     # save policy
     np.save(fname_policy, Q)
@@ -105,8 +108,6 @@ else:
 n_runs = 1
 
 path = []
-
-print("Evaluating policy")
 
 # evaluate policy
 for i in range(n_runs):
@@ -125,19 +126,32 @@ for i in range(n_runs):
         # add next state to path
         path.append(obs)
 
-print(f"Done evaluating: {path}")
+path = np.array(path)
 
 # plot policy
 si, sj = list(), list()
 
+# sidewalk
 for i in range(rows):
     for j in range(cols):
         si.append(i)
         sj.append(j)
 
-plt.plot(sj, si, 'b.')
-# plt.plot(0, path[0], color = 'red', marker = 's')
-# plt.plot(np.arange(1, cols), path[1 : ], color = 'blue', linestyle = '--')
+# path
+pi, pj = list(), list()
 
+for s in path:
+    i = s // cols
+    j = s - i * cols
+    pi.append(i)
+    pj.append(j)
+
+plt.plot(sj, si, 'b.')
+
+plt.plot(pj[0], pi[0], color = 'red', marker = 's')
+plt.plot(pj, pi, color = 'green', linestyle = '--')
+plt.plot(pj[-1], pi[-1], color = 'gold', marker = "o")
+
+#
 plt.show()
 
