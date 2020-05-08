@@ -1,5 +1,5 @@
 import numpy as np
-
+from typing import Tuple
 
 class GridWorld:
     """
@@ -16,7 +16,7 @@ class GridWorld:
         # left, up, right, down
         self.action_space = [0, 1, 2, 3]
 
-        self.terminal_state = [i for i in self._terminal_states()]
+        self.terminal_states = [i for i in self._terminal_states()]
         self._trans_mat, self._reward_mat = self._build_trans_mat()
 
 
@@ -82,7 +82,7 @@ class GridWorld:
         self.state = np.random.choice(self.nS, p=self._trans_mat[self.state, action])
         r = self._reward_mat[prev_state, action, self.state]
 
-        if self.state in self.terminal_state:
+        if self.state in self.terminal_states:
             return self.state, r, True
         else:
             return self.state, r, False
@@ -90,15 +90,20 @@ class GridWorld:
     def _terminal_states(self):
         """
         Generator yields terminal states
-        :return:
+        :return: terminal state in grid world
         """
         for i in range(1, self._nS + 1):
            if i % self.nCols == 0:
                yield i - 1
 
-    def _build_trans_mat(self):
-
+    def _build_trans_mat(self) -> (np.ndarray, np.ndarray):
+        """
+        Defines the reward matrix and transition dynamics.
+        :return:
+        """
         trans_mat = np.zeros((self._nS, self._nA, self._nS), dtype=int)
+
+        # -1 reward for moving to any state
         reward_mat = np.zeros((self._nS, self._nA, self._nS)) - 1.
 
         """
@@ -111,7 +116,7 @@ class GridWorld:
         for s in range(self._nS):
 
             # cannot move once in terminal state
-            if s in self.terminal_state:
+            if s in self.terminal_states:
                 trans_mat[s, :, s] = 1.
                 continue
 
@@ -136,8 +141,8 @@ class GridWorld:
             else:
                 trans_mat[s][3][s + self.nCols] = 1.
 
-        # for a in range(self._nA):
-        #     reward_mat[0][a][0] = 0
-        #     reward_mat[15][a][15] = 0
+        # zero reward for moving to terminal state
+        for ts in self.terminal_states:
+            reward_mat[ts, :, ts] = 10
 
         return trans_mat, reward_mat
