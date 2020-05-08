@@ -62,11 +62,13 @@ class GridWorld:
     def reset(self) -> int:
         """
         Reset the environment when you want to generate a new episode.
-        Randomly initializes location for each episode run.
+        Randomly initializes location in first column.
         return:
             initial state
         """
-        self.state = np.random.randint(self._nS)
+        # states in firs column
+        first_col = [i - self.nCols + 1 for i in self.terminal_states]
+        self.state = np.random.choice(first_col)
         return self.state
 
     def step(self, action:int) -> (int, int, bool):
