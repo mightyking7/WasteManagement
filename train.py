@@ -43,7 +43,8 @@ fname_policy = "./policy/sidewalk_policy.npy"
 if not os.path.exists(policy_dir):
     os.mkdir(policy_dir)
 
-grid_world = GridWorld(nRows = rows, nCols = cols, nA = nA, gamma = gamma)
+grid_world = GridWorld(nRows = rows, nCols = cols, sL = sL,
+                       sR = sR, nA = nA, gamma = gamma)
 
 # train if policy doesn't exist
 if not os.path.exists(fname_policy):
@@ -135,13 +136,13 @@ path = np.array(path)
 # plot policy
 si, sj = list(), list()
 
-# sidewalk
+# state coords
 for i in range(rows):
     for j in range(cols):
         si.append(i)
         sj.append(j)
 
-# path
+# path coords
 pi, pj = list(), list()
 
 for s in path:
