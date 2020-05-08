@@ -17,7 +17,8 @@ class GridWorld:
         self.action_space = [0, 1, 2, 3]
 
         self.terminal_states = [i for i in self._terminal_states()]
-        self._trans_mat, self._reward_mat = self._build_trans_mat()
+        self._trans_mat = self._build_trans_mat()
+        self._reward_mat = self._build_reward_mat()
 
 
     @property
