@@ -1,5 +1,5 @@
 import numpy as np
-from Env1 import GridWorld
+from env import GridWorld
 
 class Sidewalk(GridWorld):
     """
