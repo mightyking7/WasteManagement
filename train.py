@@ -165,7 +165,7 @@ plt.plot(right_x, right_y, color = 'black', linestyle = '-')
 plt.plot(pj[0], pi[0], color = 'red', marker = 's')
 plt.plot(pj, pi, color = 'green', linestyle = '--', label = 'agent path')
 plt.plot(pj[-1], pi[-1], color = 'gold', marker = 'o')
-plt.legend()
+plt.legend(loc = 'upper right')
 
 #
 plt.show()
