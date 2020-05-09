@@ -3,24 +3,16 @@ from env import GridWorld
 
 class Sidewalk(GridWorld):
     """
-    Defines the states, actions, and rewards the
-    agent needs to learn an optimal policy.
+        Defines the states, actions, and rewards an agent
+        needs to learn an optimal policy for staying on the sidewalk.
+
+        :author Isaac Buitrago
     """
     def __init__(self, nRows, nCols, sL, sR,  nA, gamma):
-        super(GridWorld, self).__init__(nRows, nCols, nA, gamma)
+        super(Sidewalk, self).__init__(nRows, nCols, nA, gamma)
 
-        self._nS = nRows * nCols
-        self._nA = nA
-        self._gamma = gamma
-        self.nRows = nRows
-        self.nCols = nCols
         self.sL = sL
         self.sR = sR
-
-        # left, up, right, down
-        self.action_space = [0, 1, 2, 3]
-
-        self.terminal_states = [i for i in self.terminal_states()]
         self._trans_mat = self.build_trans_mat()
         self._reward_mat = self.build_reward_mat()
 
@@ -105,6 +97,7 @@ class Sidewalk(GridWorld):
 
     def build_trans_mat(self) -> np.ndarray:
         """
+        # TODO define trasitions as  150 x 4 x 4
         Defines the transition dynamics matrix.
         :return:
         """
@@ -142,6 +135,7 @@ class Sidewalk(GridWorld):
 
     def build_reward_mat(self) -> np.ndarray:
         """
+        # TODO define rewards as 150 x 4
         Defines the reward matrix
         :return:
         """

@@ -17,6 +17,16 @@ class GridWorld(object):
         self.nRows = nRows
         self.nCols = nCols
 
+        """
+        0 - left
+        1 - up
+        2 - right
+        3 - down
+        """
+        self.action_space = [0, 1, 2, 3]
+        self.terminal_states = [i for i in self.terminal_states()]
+
+
     def terminal_states(self):
         """
         Generator yields terminal states
