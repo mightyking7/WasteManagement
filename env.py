@@ -51,23 +51,6 @@ class GridWorld(object):
         """ discount factor """
         return NotImplementedError()
 
-    @property
-    def TD(self):
-        """
-        Transition Dynamics
-        return: a numpy array shape of [nS,nA,nS]
-            TD[s,a,s'] := the probability it will resulted in s' when it execute action a given state s
-        """
-        return NotImplementedError()
-
-    @property
-    def R(self):
-        """
-        Reward function
-        return: a numpy array shape of [nS,nA,nS]
-            R[s,a,s'] := reward the agent will get it experiences (s,a,s') transition.
-        """
-        return NotImplementedError()
 
     def sample(self):
         """

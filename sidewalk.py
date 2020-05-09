@@ -32,24 +32,6 @@ class Sidewalk(GridWorld):
         """ discount factor """
         return self._gamma
 
-    @property
-    def TD(self) -> np.array:
-        """
-        Transition Dynamics
-        return: a numpy array shape of [nS,nA,nS]
-            TD[s,a,s'] := the probability it will resulted in s' when it execute action a given state s
-        """
-        return self._trans_mat
-
-    @property
-    def R(self) -> np.array:
-        """
-        Reward function
-        return: a numpy array shape of [nS,nA,nS]
-            R[s,a,s'] := reward the agent will get it experiences (s,a,s') transition.
-        """
-        return self._reward_mat
-
     def sample(self):
         """
         :return: Random action for exploration
