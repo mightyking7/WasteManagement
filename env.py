@@ -65,13 +65,21 @@ class GridWorld:
     def reset(self) -> int:
         """
         Reset the environment when you want to generate a new episode.
-        Randomly initializes location in first column.
+        Randomly initializes location at beginning of sidewalk.
         return:
             initial state
         """
-        # states in firs column
-        first_col = [i - self.nCols + 1 for i in self.terminal_states]
-        self.state = np.random.choice(first_col)
+        first_col = np.array([i - self.nCols + 1 for i in self.terminal_states])
+
+        # states at beginning of sidewalk
+        ss = list()
+        for s in first_col:
+            row = s // self.nCols
+            if row > self.sL and row < self.sR:
+                ss.append(row)
+
+        self.state = self.nCols * np.random.choice(ss)
+
         return self.state
 
     def step(self, action:int) -> (int, int, bool):
