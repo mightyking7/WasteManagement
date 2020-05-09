@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from env import GridWorld
+from sidewalk import Sidewalk
 # from algo import Q_learning
 from tqdm import tqdm
 import matplotlib.pyplot as plt
@@ -43,14 +43,14 @@ fname_policy = "./policy/sidewalk_policy.npy"
 if not os.path.exists(policy_dir):
     os.mkdir(policy_dir)
 
-grid_world = GridWorld(nRows = rows, nCols = cols, sL = sL,
-                       sR = sR, nA = nA, gamma = gamma)
+sidewalk = Sidewalk(nRows = rows, nCols = cols, sL = sL,
+                    sR = sR, nA = nA, gamma = gamma)
 
 # train if policy doesn't exist
 if not os.path.exists(fname_policy):
 
     # randomly initialize Q table
-    Q = np.random.rand(grid_world.nS, grid_world.nA)
+    Q = np.random.rand(sidewalk.nS, sidewalk.nA)
 
     # set state-action value of final states to 0
     # TODO make this dynamic
@@ -68,7 +68,7 @@ if not os.path.exists(fname_policy):
 
         delta = 0.0
 
-        state = grid_world.reset()
+        state = sidewalk.reset()
 
         done = False
 
@@ -78,19 +78,19 @@ if not os.path.exists(fname_policy):
 
             # explore action space
             if np.random.uniform(0, 1) < epsilon:
-                action = grid_world.sample()
+                action = sidewalk.sample()
 
             # exploit
             else:
                 action = np.argmax(Q[state])
 
             # take step in env
-            obs, r, done = grid_world.step(action)
+            obs, r, done = sidewalk.step(action)
 
             # update Q table
             prev_value = Q[state, action]
 
-            new_value = prev_value + lr * (r + grid_world.gamma * np.max(Q[obs]) - prev_value)
+            new_value = prev_value + lr * (r + sidewalk.gamma * np.max(Q[obs]) - prev_value)
 
             Q[state, action] = new_value
 
@@ -116,7 +116,7 @@ path = []
 
 # evaluate policy
 for i in range(n_runs):
-    state = grid_world.reset()
+    state = sidewalk.reset()
 
     path.append(state)
 
@@ -124,7 +124,7 @@ for i in range(n_runs):
 
     while not done:
         action = np.argmax(Q[state])
-        obs, r, done = grid_world.step(action)
+        obs, r, done = sidewalk.step(action)
 
         state = obs
 
