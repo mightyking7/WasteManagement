@@ -18,8 +18,8 @@ class ObstacleEnv(GridWorld):
         self.reward_mat = self.build_reward_mat()
         self.obstacles = self.assign_obstacles()
 
-    def sample(self):
-        return super().sample()
+        # only consider terminal states with no obstacles as a goal
+        self.goal_states = self.terminal_states.difference(self.obstacles)
 
     def reset(self) -> int:
         # states in first column
@@ -32,10 +32,10 @@ class ObstacleEnv(GridWorld):
         assert action in range(self._nA), "Invalid Action"
 
         prev_state = self.state
-        self.state = np.random.choice(self.nS, p=self.trans_mat[self.state, action])
+        self.state = self.trans_mat[self.state, action]
         r = self.reward_mat[prev_state, action]
 
-        if self.state in self.terminal_states:
+        if self.state in self.goal_states:
             return self.state, r, True
         else:
             return self.state, r, False
@@ -45,11 +45,9 @@ class ObstacleEnv(GridWorld):
 
         for s in range(self._nS):
 
-            # self.obstacles.intersection(set(self.terminal_states))
-
             # cannot move once in terminal state
-            if s in self.terminal_states :
-                trans_mat[s, :, s] = 1.
+            if s in self.goal_states:
+                trans_mat[s, :] = s
                 continue
 
             # define left movements
@@ -65,7 +63,10 @@ class ObstacleEnv(GridWorld):
                 trans_mat[s][1] = s - self.nCols
 
             # define right movements
-            trans_mat[s][2] = s + 1
+            if (s + 1) % self.nCols == 0:
+                trans_mat[s][2] = s
+            else:
+                trans_mat[s][2] = s + 1
 
             # define down movements
             if s >= self._nS - self.nCols:
@@ -77,7 +78,34 @@ class ObstacleEnv(GridWorld):
 
 
     def build_reward_mat(self):
-        return super().build_reward_mat()
+
+        reward_mat = np.zeros((self._nS, self._nA))
+
+        for s in range(self._nS):
+
+            # reached goal
+            if s in self.goal_states:
+                reward_mat[s - 1, 2] = 50.
+                reward_mat[s + self.nCols, 1] = 50.
+                reward_mat[s - self.nCols, 3] = 50.
+                continue
+
+            # hit obstacle
+            if s in self.obstacles:
+                reward_mat[s - 1, 2] = -5.
+                reward_mat[s + 1, 0] = -15.
+                reward_mat[s + self.nCols, 1] = -5.
+                reward_mat[s - self.nCols, 3] = -5.
+
+            # right movements
+            reward_mat[s, 2] = 10.
+
+            # left movements
+            reward_mat[s, 0] = -10.
+
+        return reward_mat
+
+
 
     def assign_obstacles(self) -> Set[int]:
         """
