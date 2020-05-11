@@ -36,3 +36,27 @@ class Trainer:
             Q = np.load(fname_policy)
 
         return Q
+
+    def eval(self, Q:np.ndarray) -> np.ndarray:
+
+        path = list()
+
+        state = self.env.reset()
+
+        path.append(state)
+
+        done = False
+
+        while not done:
+            action = np.argmax(Q[state])
+
+            obs, r, done = self.env.step(action)
+
+            state = obs
+
+            # add next state to path
+            path.append(obs)
+
+        path = np.array(path)
+
+        return path
