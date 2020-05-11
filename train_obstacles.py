@@ -10,8 +10,8 @@ rows = 6
 # columns in grid
 cols = 25
 
-# probability of exploring
-epsilon = 0.1
+# probability of exploiting
+epsilon = 0.40
 
 # discount factor
 gamma = 0.6
