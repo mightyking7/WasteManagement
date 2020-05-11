@@ -31,13 +31,8 @@ sR = 3
 policy_dir = "./policy/"
 fname_policy = "./policy/sidewalk_policy.npy"
 
+img_dir = "./plots/"
 
-# 1 is an obstacle, 0 is an empty cell
-# dist = [1,0,0,0,0]
-#
-# num_tiles = rows * cols
-#
-# world = np.array([np.random.choice(dist) for i in range (num_tiles)]).reshape((rows, cols))
 
 # make dir for policy
 if not os.path.exists(policy_dir):
@@ -167,6 +162,4 @@ plt.plot(pj, pi, color = 'green', linestyle = '--', label = 'agent path')
 plt.plot(pj[-1], pi[-1], color = 'gold', marker = 'o')
 plt.legend(loc = 'upper right')
 
-#
-plt.show()
-
+plt.savefig(img_dir + "sidewalk_policy.png")
