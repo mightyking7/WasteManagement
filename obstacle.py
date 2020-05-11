@@ -13,13 +13,14 @@ class ObstacleEnv(GridWorld):
     def __init__(self, nRows, nCols, nA, gamma):
         super(ObstacleEnv, self).__init__(nRows, nCols, nA, gamma)
 
-        # define rewards and transitions
-        self.trans_mat = self.build_trans_mat()
-        self.reward_mat = self.build_reward_mat()
         self.obstacles = self.assign_obstacles()
 
         # only consider terminal states with no obstacles as a goal
         self.goal_states = self.terminal_states.difference(self.obstacles)
+
+        # define rewards and transitions
+        self.trans_mat = self.build_trans_mat()
+        self.reward_mat = self.build_reward_mat()
 
     def reset(self) -> int:
         # states in first column
@@ -83,19 +84,34 @@ class ObstacleEnv(GridWorld):
 
         for s in range(self._nS):
 
-            # reached goal
+            # current row of state
+            row = s // self.nCols
+
+            # reached goal, reward for moving into goal
             if s in self.goal_states:
                 reward_mat[s - 1, 2] = 50.
-                reward_mat[s + self.nCols, 1] = 50.
-                reward_mat[s - self.nCols, 3] = 50.
+
+                # make sure it's not top or bottom rows of grid
+                if row != self.nRows - 1:
+                    reward_mat[s + self.nCols, 1] = 50.
+
+                if row != 0:
+                    reward_mat[s - self.nCols, 3] = 50.
                 continue
 
-            # hit obstacle
+            # hit obstacle, penalize for moving into state
             if s in self.obstacles:
                 reward_mat[s - 1, 2] = -5.
-                reward_mat[s + 1, 0] = -15.
-                reward_mat[s + self.nCols, 1] = -5.
-                reward_mat[s - self.nCols, 3] = -5.
+
+                # obstacle in last column
+                if s not in self.terminal_states:
+                    reward_mat[s + 1, 0] = -15.
+
+                if row != self.nRows - 1:
+                    reward_mat[s + self.nCols, 1] = -5.
+
+                if row != 0:
+                    reward_mat[s - self.nCols, 3] = -5.
 
             # right movements
             reward_mat[s, 2] = 10.
