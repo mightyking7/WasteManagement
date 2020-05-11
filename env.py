@@ -2,7 +2,11 @@ import numpy as np
 
 class GridWorld(object):
     """
-    Grid world environment
+    Grid world environment with a set number of rows, columns, and states.
+    The environment also defines the number of actions and the discount factor.
+    Child classes are responsible for defining the reward matrix, transition matrix,
+    and how to step through the environment.
+
     :author: Isaac Buitrago
     """
     def __init__(self, nRows, nCols, nA, gamma):
@@ -59,14 +63,17 @@ class GridWorld(object):
         return np.random.choice(self.action_space)
 
 
-    def reset(self):
+    def reset(self) -> int:
         """
         Reset the environment when you want to generate a new episode.
         Randomly initializes location at beginning of grid.
         return:
             initial state
         """
-        return NotImplementedError()
+        # states in first column
+        first_col = np.array([i - self.nCols + 1 for i in self.terminal_states])
+        self.state = np.random.choice(first_col)
+        return self.state
 
     def step(self, action:int):
         """

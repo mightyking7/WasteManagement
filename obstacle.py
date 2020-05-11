@@ -22,12 +22,6 @@ class ObstacleEnv(GridWorld):
         self.trans_mat = self.build_trans_mat()
         self.reward_mat = self.build_reward_mat()
 
-    def reset(self) -> int:
-        # states in first column
-        first_col = np.array([i - self.nCols + 1 for i in self.terminal_states])
-        self.state = np.random.choice(first_col)
-        return self.state
-
     def step(self, action: int) -> (int, int, bool):
 
         assert action in range(self._nA), "Invalid Action"
