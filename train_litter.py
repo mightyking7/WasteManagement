@@ -11,7 +11,7 @@ rows = 6
 cols = 25
 
 # probability of exploiting
-epsilon = 0.90
+epsilon = 0.20
 
 # discount factor
 gamma = 0.6
@@ -83,6 +83,7 @@ for i in range(n_runs):
 
         # add next state to path
         path.append(obs)
+        print(path)
 
 # convert path to ndarray
 path = np.array(path)
@@ -104,7 +105,7 @@ for l in LitterEnv.litter:
     li.append(i)
     lj.append(j)
 
-# path coords
+# # path coords
 pi, pj = list(), list()
 
 for s in path:
