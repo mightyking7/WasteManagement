@@ -114,7 +114,7 @@ class ObstacleEnv(GridWorld):
                     reward_mat[s - self.nCols, 3] = -5.
 
             # right movements
-            reward_mat[s, 2] = 10.
+            reward_mat[s, 2] = 5.
 
             # left movements
             reward_mat[s, 0] = -10.
