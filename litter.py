@@ -77,26 +77,26 @@ class LitterEnv(GridWorld):
 
             # reached goal, reward for moving into goal
             if s in self.terminal_states:
-                reward_mat[s - 1, 2] = 20.
+                reward_mat[s - 1, 2] = 50.
                 continue
 
             # reward for picking up litter
             if s in self.litter:
-                reward_mat[s - 1, 2] = 15.
+                reward_mat[s - 1, 2] = 5.
 
                 # litter not in the last column
-                if s not in self.terminal_states:
-                    reward_mat[s + 1, 0] = 5.
+                # if s not in self.terminal_states:
+                #     reward_mat[s + 1, 0] = 5.
 
                 if row != 0:
-                    reward_mat[s - self.nCols, 3] = 15.
+                    reward_mat[s - self.nCols, 3] = 5.
 
                 if row != self.nRows - 1:
-                    reward_mat[s + self.nCols, 1] = 15.
+                    reward_mat[s + self.nCols, 1] = 5.
 
 
             # right movements
-            reward_mat[s, 2] = -1.
+            reward_mat[s, 2] = 10.
 
             # left movements
             reward_mat[s, 0] = -10.
