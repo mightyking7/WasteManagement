@@ -24,10 +24,10 @@ class GridWorld(object):
         3 - down
         """
         self.action_space = [0, 1, 2, 3]
-        self.terminal_states = [i for i in self.terminal_states()]
+        self.terminal_states = [i for i in self.get_terminal_states()]
 
 
-    def terminal_states(self):
+    def get_terminal_states(self):
         """
         Generator yields terminal states
         :return: terminal state in grid world
@@ -61,7 +61,7 @@ class GridWorld(object):
     def reset(self):
         """
         Reset the environment when you want to generate a new episode.
-        Randomly initializes location at beginning of sidewalk.
+        Randomly initializes location at beginning of grid.
         return:
             initial state
         """
