@@ -13,8 +13,8 @@ class Sidewalk(GridWorld):
 
         self.sL = sL
         self.sR = sR
-        self._trans_mat = self.build_trans_mat()
-        self._reward_mat = self.build_reward_mat()
+        self.trans_mat = self.build_trans_mat()
+        self.reward_mat = self.build_reward_mat()
 
 
     @property
@@ -65,11 +65,10 @@ class Sidewalk(GridWorld):
             next state, reward, done (whether agent reached to a terminal state)
         """
         assert action in range(self._nA), "Invalid Action"
-        # assert self.state not in self.terminal_state, "Episode has ended!"
 
         prev_state = self.state
-        self.state = np.random.choice(self.nS, p=self._trans_mat[self.state, action])
-        r = self._reward_mat[prev_state, action, self.state]
+        self.state = np.random.choice(self.nS, p=self.trans_mat[self.state, action])
+        r = self.reward_mat[prev_state, action, self.state]
 
         if self.state in self.terminal_states:
             return self.state, r, True
