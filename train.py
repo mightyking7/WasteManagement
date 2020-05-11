@@ -11,7 +11,7 @@ rows = 6
 # columns in grid
 cols = 25
 
-# probability of exploring
+# probability of exploiting
 epsilon = 0.1
 
 # discount factor
