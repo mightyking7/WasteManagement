@@ -78,6 +78,7 @@ for i in range(n_runs):
 
         # add next state to path
         path.append(obs)
+        print(path)
 
 # convert path to ndarray
 path = np.array(path)
@@ -93,6 +94,11 @@ for i in range(rows):
 
 # obstacles
 oi, oj = list(), list()
+for o in obstacleEnv.obstacles:
+    i = o // cols
+    j = o - i * cols
+    oi.append(i)
+    oj.append(j)
 
 # path coords
 pi, pj = list(), list()
@@ -106,15 +112,13 @@ for s in path:
 # plot
 plt.gca().invert_yaxis()
 
-plt.plot(sj, si, 'b.')
+plt.plot(sj, si, 'b.', zorder=0)
 
-plt.plot(oj, oi, marker=dict(color='LightSkyBlue', size=20,
-            line=dict(color='MediumPurple', width=2)
-        ), label='Obstacle')
+plt.scatter(oj, oi, marker='H', c='darkmagenta', zorder=1, s=70.0, label='Obstacle')
 
-plt.plot(pj[0], pi[0], color='red', marker='s', label='start point')
+plt.scatter(pj[0], pi[0], color='red', marker='s', label='start point')
 plt.plot(pj, pi, color='green', linestyle='--', label='agent path')
-plt.plot(pj[-1], pi[-1], color='gold', marker='o', label='end point')
+plt.scatter(pj[-1], pi[-1], color='gold', marker='o', label='end point')
 plt.legend(loc='upper right')
 
 #
