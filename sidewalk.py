@@ -17,21 +17,6 @@ class Sidewalk(GridWorld):
         self.reward_mat = self.build_reward_mat()
 
 
-    @property
-    def nS(self) -> int:
-        """ # of possible states """
-        return self._nS
-
-    @property
-    def nA(self) -> int:
-        """ # of possible actions """
-        return self._nA
-
-    @property
-    def gamma(self) -> float:
-        """ discount factor """
-        return self._gamma
-
     def reset(self) -> int:
         """
         Reset the environment when you want to generate a new episode.

@@ -40,18 +40,17 @@ class GridWorld(object):
     @property
     def nS(self):
         """ # of possible states """
-        return NotImplementedError()
+        return self._nS
 
     @property
     def nA(self):
         """ # of possible actions """
-        return NotImplementedError()
+        return self._nA
 
     @property
     def gamma(self):
         """ discount factor """
-        return NotImplementedError()
-
+        return self._gamma
 
     def sample(self) -> int:
         """
