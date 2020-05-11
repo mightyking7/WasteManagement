@@ -27,11 +27,16 @@ lr = 0.01
 policy_dir = "./policy/"
 fname_policy = "./policy/obstacle_policy.npy"
 
+img_dir = "./plots/"
 
 
 # make dir for policy
 if not os.path.exists(policy_dir):
     os.mkdir(policy_dir)
+
+# make dir for plots
+if not os.path.exists(img_dir):
+    os.mkdir(img_dir)
 
 obstacleEnv = ObstacleEnv(nRows = rows, nCols = cols, nA = nA, gamma = gamma)
 
@@ -121,6 +126,6 @@ plt.plot(pj, pi, color='green', linestyle='--', label='agent path')
 plt.scatter(pj[-1], pi[-1], color='gold', marker='o', label='end point')
 plt.legend(loc='upper right')
 
-#
-plt.show()
+# save fig
+plt.savefig(img_dir + "obstacle_policy.png")
 
