@@ -5,15 +5,12 @@ from env import GridWorld
 
 class Trainer:
 
-    def __init__(self, rows, cols, nA, env: GridWorld):
+    def __init__(self, env: GridWorld):
 
-        self.rows = rows
-        self.cols = cols
-        self.nA = nA
         self.env = env
         self.policy_dir = "./policy/"
 
-    def train(self, fname, gamma, epsilon, lr, n_episodes) -> np.ndarray:
+    def train(self, fname, epsilon, lr, n_episodes) -> np.ndarray:
 
         fname_policy = self.policy_dir + fname
 
