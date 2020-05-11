@@ -63,7 +63,7 @@ class Sidewalk(GridWorld):
         """
         trans_mat = np.zeros((self._nS, self._nA, self._nS), dtype=int)
 
-        for s in range(self._nS):
+        for s in range(self.nS):
 
             # cannot move once in terminal state
             if s in self.terminal_states:
@@ -101,7 +101,7 @@ class Sidewalk(GridWorld):
         """
         reward_mat = np.zeros((self._nS, self._nA, self._nS))
 
-        for s in range(self._nS):
+        for s in range(self.nS):
 
             row = s // self.nCols
 

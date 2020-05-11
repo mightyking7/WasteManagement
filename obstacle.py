@@ -36,9 +36,9 @@ class ObstacleEnv(GridWorld):
             return self.state, r, False
 
     def build_trans_mat(self) -> np.ndarray:
-        trans_mat = np.zeros((self._nS, self._nA), dtype=int)
+        trans_mat = np.zeros((self.nS, self.nA), dtype=int)
 
-        for s in range(self._nS):
+        for s in range(self.nS):
 
             # cannot move once in terminal state
             if s in self.goal_states:
@@ -64,7 +64,7 @@ class ObstacleEnv(GridWorld):
                 trans_mat[s][2] = s + 1
 
             # define down movements
-            if s >= self._nS - self.nCols:
+            if s >= self.nS - self.nCols:
                 trans_mat[s][3] = s
             else:
                 trans_mat[s][3] = s + self.nCols
@@ -74,9 +74,9 @@ class ObstacleEnv(GridWorld):
 
     def build_reward_mat(self) -> np.ndarray:
 
-        reward_mat = np.zeros((self._nS, self._nA))
+        reward_mat = np.zeros((self.nS, self.nA))
 
-        for s in range(self._nS):
+        for s in range(self.nS):
 
             # current row of state
             row = s // self.nCols
