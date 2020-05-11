@@ -40,7 +40,7 @@ class ObstacleEnv(GridWorld):
         else:
             return self.state, r, False
 
-    def build_trans_mat(self):
+    def build_trans_mat(self) -> np.ndarray:
         trans_mat = np.zeros((self._nS, self._nA), dtype=int)
 
         for s in range(self._nS):
@@ -77,7 +77,7 @@ class ObstacleEnv(GridWorld):
         return trans_mat
 
 
-    def build_reward_mat(self):
+    def build_reward_mat(self) -> np.ndarray:
 
         reward_mat = np.zeros((self._nS, self._nA))
 
