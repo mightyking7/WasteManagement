@@ -32,12 +32,6 @@ class Sidewalk(GridWorld):
         """ discount factor """
         return self._gamma
 
-    def sample(self):
-        """
-        :return: Random action for exploration
-        """
-        return np.random.choice(self.action_space)
-
     def reset(self) -> int:
         """
         Reset the environment when you want to generate a new episode.

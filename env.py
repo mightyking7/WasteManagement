@@ -1,3 +1,4 @@
+import numpy as np
 
 class GridWorld(object):
     """
@@ -52,11 +53,12 @@ class GridWorld(object):
         return NotImplementedError()
 
 
-    def sample(self):
+    def sample(self) -> int:
         """
         :return: Random action for exploration
         """
-        return NotImplementedError()
+        return np.random.choice(self.action_space)
+
 
     def reset(self):
         """
