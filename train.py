@@ -72,7 +72,7 @@ if not os.path.exists(fname_policy):
         while not done :
 
             # explore action space
-            if np.random.uniform(0, 1) < epsilon:
+            if np.random.uniform(0, 1) > epsilon:
                 action = sidewalk.sample()
 
             # exploit

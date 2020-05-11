@@ -46,8 +46,8 @@ class Sidewalk(GridWorld):
         assert action in range(self._nA), "Invalid Action"
 
         prev_state = self.state
-        self.state = np.random.choice(self.nS, p=self.trans_mat[self.state, action])
-        r = self.reward_mat[prev_state, action, self.state]
+        self.state = self.trans_mat[self.state, action]
+        r = self.reward_mat[prev_state, action]
 
         if self.state in self.terminal_states:
             return self.state, r, True
@@ -57,49 +57,47 @@ class Sidewalk(GridWorld):
 
     def build_trans_mat(self) -> np.ndarray:
         """
-        # TODO define trasitions as  150 x 4 x 4
         Defines the transition dynamics matrix.
         :return:
         """
-        trans_mat = np.zeros((self._nS, self._nA, self._nS), dtype=int)
+        trans_mat = np.zeros((self.nS, self.nA), dtype=int)
 
         for s in range(self.nS):
 
             # cannot move once in terminal state
             if s in self.terminal_states:
-                trans_mat[s, :, s] = 1.
+                trans_mat[s, :] = s
                 continue
 
             # define left movements
             if s % self.nCols == 0:
-                trans_mat[s][0][s] = 1.
+                trans_mat[s][0] = s
             else:
-                trans_mat[s][0][s - 1] = 1.
+                trans_mat[s][0] = s - 1
 
             # define up movements
             if s < self.nCols:
-                trans_mat[s][1][s] = 1.
+                trans_mat[s][1] = s
             else:
-                trans_mat[s][1][s - self.nCols] = 1.
+                trans_mat[s][1] = s - self.nCols
 
             # define right movements
-            trans_mat[s][2][s + 1] = 1.
+            trans_mat[s][2] = s + 1
 
             # define down movements
             if s >= self._nS - self.nCols:
-                trans_mat[s][3][s] = 1.
+                trans_mat[s][3] = s
             else:
-                trans_mat[s][3][s + self.nCols] = 1.
+                trans_mat[s][3] = s + self.nCols
 
         return trans_mat
 
     def build_reward_mat(self) -> np.ndarray:
         """
-        # TODO define rewards as 150 x 4
         Defines the reward matrix
         :return:
         """
-        reward_mat = np.zeros((self._nS, self._nA, self._nS))
+        reward_mat = np.zeros((self.nS, self.nA))
 
         for s in range(self.nS):
 
@@ -110,32 +108,32 @@ class Sidewalk(GridWorld):
 
                 # within sidewalk
                 if row > self.sL and row < self.sR:
-                    reward_mat[s - 1, 2, s] = 50.
+                    reward_mat[s - 1, 2] = 50.
                 else:
-                    reward_mat[s - 1, 2, s] = 15.
+                    reward_mat[s - 1, 2] = 15.
 
                 continue
 
             # within sidewalk
             if row > self.sL and row < self.sR:
-                reward_mat[s, 2, s + 1] = 10.
-                reward_mat[s, 0, s - 1] = -10.
+                reward_mat[s, 2] = 10.
+                reward_mat[s, 0] = -10.
 
             # on left sidewalk edge
             elif row == self.sL:
-                reward_mat[s, 3, s + self.nCols] = 10.
-                reward_mat[s, 2, s + 1] = 5.
-                reward_mat[s, 0, s - 1] = -10.
+                reward_mat[s, 3] = 10.
+                reward_mat[s, 2] = 5.
+                reward_mat[s, 0] = -10.
 
             # on right sidewalk edge
             elif row == self.sR:
-                reward_mat[s, 1, s - self.nCols] = 10.
-                reward_mat[s, 2, s + 1] = 5.
-                reward_mat[s, 0, s - 1] = -10.
+                reward_mat[s, 1] = 10.
+                reward_mat[s, 2] = 5.
+                reward_mat[s, 0] = -10.
 
             # out of sidewalk
             else:
-                reward_mat[s, 2, s + 1] = 5.
-                reward_mat[s, 0, s - 1] = -10.
+                reward_mat[s, 2] = 5.
+                reward_mat[s, 0] = -10.
 
         return reward_mat
