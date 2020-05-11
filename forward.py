@@ -9,7 +9,7 @@ class ForwardEnv(GridWorld):
 
         :author Isaac Buitrago
     """
-    def __init__(self, nRows, nCols, sL, sR,  nA, gamma):
+    def __init__(self, nRows, nCols, nA, gamma):
         super(ForwardEnv, self).__init__(nRows, nCols, nA, gamma)
         self.trans_mat = self.build_trans_mat()
         self.reward_mat = self.build_reward_mat()
