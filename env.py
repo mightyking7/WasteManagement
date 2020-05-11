@@ -24,7 +24,7 @@ class GridWorld(object):
         3 - down
         """
         self.action_space = [0, 1, 2, 3]
-        self.terminal_states = [i for i in self.get_terminal_states()]
+        self.terminal_states = {i for i in self.get_terminal_states()}
 
 
     def get_terminal_states(self):
