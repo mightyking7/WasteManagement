@@ -37,22 +37,18 @@ class Sidewalk(GridWorld):
 
         return self.state
 
-    def step(self, action:int) -> (int, int, bool):
+    def step(self, action:int) -> (int, int):
         """
         proceed one step in the state space.
         return:
-            next state, reward, done (whether agent reached to a terminal state)
+            next state and reward
         """
         assert action in range(self._nA), "Invalid Action"
 
         prev_state = self.state
         self.state = self.trans_mat[self.state, action]
         r = self.reward_mat[prev_state, action]
-
-        if self.state in self.terminal_states:
-            return self.state, r, True
-        else:
-            return self.state, r, False
+        return self.state, r
 
 
     def build_trans_mat(self) -> np.ndarray:
@@ -63,11 +59,6 @@ class Sidewalk(GridWorld):
         trans_mat = np.zeros((self.nS, self.nA), dtype=int)
 
         for s in range(self.nS):
-
-            # cannot move once in terminal state
-            if s in self.terminal_states:
-                trans_mat[s, :] = s
-                continue
 
             # define left movements
             if s % self.nCols == 0:
@@ -82,10 +73,13 @@ class Sidewalk(GridWorld):
                 trans_mat[s][1] = s - self.nCols
 
             # define right movements
-            trans_mat[s][2] = s + 1
+            if s in self.terminal_states:
+                trans_mat[s][2] = s
+            else:
+                trans_mat[s][2] = s + 1
 
             # define down movements
-            if s >= self._nS - self.nCols:
+            if s >= self.nS - self.nCols:
                 trans_mat[s][3] = s
             else:
                 trans_mat[s][3] = s + self.nCols
@@ -94,7 +88,10 @@ class Sidewalk(GridWorld):
 
     def build_reward_mat(self) -> np.ndarray:
         """
-        Defines the reward matrix
+        Defines the reward matrix for
+        transitions in the environment.
+        Initially, all transitions are 10 and penalties
+        are given for touching the left and right sidewalk edges.
         :return:
         """
         reward_mat = np.zeros((self.nS, self.nA))
@@ -103,37 +100,39 @@ class Sidewalk(GridWorld):
 
             row = s // self.nCols
 
-            # terminal state
-            if s in self.terminal_states:
+            # on left edge of sidewalk
+            if row == self.sL:
+                # penalize movement into and along edge
+                reward_mat[s + self.nCols, 1] = -10.
+                reward_mat[s, 0] = -10.
+                reward_mat[s, 2] = -10.
 
-                # within sidewalk
-                if row > self.sL and row < self.sR:
-                    reward_mat[s - 1, 2] = 50.
-                else:
-                    reward_mat[s - 1, 2] = 15.
-
+                # reward movement out of left edge
+                reward_mat[s, 3] = 10.
                 continue
 
-            # within sidewalk
-            if row > self.sL and row < self.sR:
-                reward_mat[s, 2] = 10.
-                reward_mat[s, 0] = -10.
-
-            # on left sidewalk edge
-            elif row == self.sL:
-                reward_mat[s, 3] = 10.
-                reward_mat[s, 2] = 5.
-                reward_mat[s, 0] = -10.
-
-            # on right sidewalk edge
+            # on right edge of sidewalk
             elif row == self.sR:
+                # penalize movement into and along edge
+                reward_mat[s - self.nCols, 3] = -10.
+                reward_mat[s, 0] = -10.
+                reward_mat[s, 2] = -10.
+
+                # reward movement out of right edge
                 reward_mat[s, 1] = 10.
-                reward_mat[s, 2] = 5.
+                continue
+
+            # reward rightward movements
+            if s not in self.terminal_states:
+                reward_mat[s, 2] = 20.
+
+            # define leftward movements
+            if s % self.nCols != 0:
                 reward_mat[s, 0] = -10.
 
-            # out of sidewalk
-            else:
-                reward_mat[s, 2] = 5.
-                reward_mat[s, 0] = -10.
+            # define downward movements
+            # if s < self.nS - self.nCols:
+            #     reward_mat[s, 3] = 10.
+
 
         return reward_mat

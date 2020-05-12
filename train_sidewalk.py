@@ -12,7 +12,7 @@ rows = 6
 cols = 25
 
 # probability of exploiting
-epsilon = 0.1
+epsilon = 0.8
 
 # discount factor
 gamma = 0.6
@@ -24,8 +24,8 @@ nA = 4
 lr = 0.01
 
 # rows for edge of left and right sidewalk
-sL = 1
-sR = 3
+sL = 0
+sR = 5
 
 # directories for policy
 policy_dir = "./policy/"
@@ -58,44 +58,39 @@ if not os.path.exists(fname_policy):
 
     print("Training")
 
+    state = sidewalk.reset()
+
     # update Q function until convergence
     while delta2 >= theta:
 
         delta = 0.0
 
-        state = sidewalk.reset()
-
-        done = False
-
         print(f"> Episode: {episode}")
 
-        while not done :
+        # explore action space
+        if np.random.uniform(0, 1) > epsilon:
+            action = sidewalk.sample()
 
-            # explore action space
-            if np.random.uniform(0, 1) > epsilon:
-                action = sidewalk.sample()
+        # exploit
+        else:
+            action = np.argmax(Q[state])
 
-            # exploit
-            else:
-                action = np.argmax(Q[state])
+        # take step in env
+        obs, r = sidewalk.step(action)
 
-            # take step in env
-            obs, r, done = sidewalk.step(action)
+        # update Q table
+        prev_value = Q[state, action]
 
-            # update Q table
-            prev_value = Q[state, action]
+        new_value = prev_value + lr * (r + sidewalk.gamma * np.max(Q[obs]) - prev_value)
 
-            new_value = prev_value + lr * (r + sidewalk.gamma * np.max(Q[obs]) - prev_value)
+        Q[state, action] = new_value
 
-            Q[state, action] = new_value
-
-            # update state
-            state = obs
-
-            delta = max(delta, np.abs(new_value - prev_value))
+        # update state
+        state = obs
 
         # determine max delta in q values
-        delta2 = delta
+        delta2 = max(delta, np.abs(new_value - prev_value))
+
         episode += 1
 
     # save policy
@@ -105,26 +100,25 @@ else:
     # load policy
     Q = np.load(fname_policy)
 
-n_runs = 1
+n_runs = 25
 
-path = []
+path = list()
+
+state = sidewalk.reset()
+
+path.append(state)
 
 # evaluate policy
 for i in range(n_runs):
-    state = sidewalk.reset()
 
-    path.append(state)
+    action = np.argmax(Q[state])
+    obs, r = sidewalk.step(action)
 
-    done = False
+    state = obs
 
-    while not done:
-        action = np.argmax(Q[state])
-        obs, r, done = sidewalk.step(action)
-
-        state = obs
-
-        # add next state to path
-        path.append(obs)
+    # add next state to path
+    path.append(obs)
+    print(path)
 
 path = np.array(path)
 
@@ -153,13 +147,14 @@ left_y, right_y = np.array([sL] * cols), np.array([sR] * cols)
 # plot
 plt.gca().invert_yaxis()
 
-plt.plot(sj, si, 'b.')
+plt.plot(sj, si, 'b.', zorder=0)
 plt.plot(left_x, left_y, color = 'black', linestyle = '-', label = 'sidewalk')
 plt.plot(right_x, right_y, color = 'black', linestyle = '-')
 
-plt.plot(pj[0], pi[0], color = 'red', marker = 's')
+plt.scatter(pj[0], pi[0], color='black', zorder=1, marker='x', label='start')
 plt.plot(pj, pi, color = 'green', linestyle = '--', label = 'agent path')
-plt.plot(pj[-1], pi[-1], color = 'gold', marker = 'o')
+plt.scatter(pj[-1], pi[-1], color='red', zorder=1, marker='x', label='end')
+
 plt.legend(loc = 'upper right')
 
 plt.savefig(img_dir + "sidewalk_policy.png")
